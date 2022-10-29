@@ -1,0 +1,123 @@
+:root {
+  --background: #f7f7f7;
+  --text: black;
+  --button: #ECEFF1 ;
+  --button-active: #eeeeee;
+  --button-hover: #CFD8DC;
+}
+
+* {
+  font-size: 16px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: var(--background);
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+button {
+  padding: 0.5rem;
+  background: var(--button);
+  color: var(--text);
+  border-radius: 0.25rem;
+  border-color: #78909C;
+  width: 13rem;
+}
+
+button:active {
+  background: var(--button-active);
+}
+
+button:hover {
+  background: var(--button-hover);
+}
+
+details {
+  margin: 0.75rem 0;
+}
+
+.container {
+  width: 95%;
+  margin: auto;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.auth-container {
+  border: 1px solid;
+  border-radius: 0.25rem;
+  margin: 4px;
+}
+
+.login-logo {
+  padding: 5px;
+  margin-bottom: 10px;
+  position: relative;
+  width: 25%;
+  max-height: 150px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow:
+  0 1.4px 1.7px rgba(0, 0, 0, 0.017),
+  0 3.3px 4px rgba(0, 0, 0, 0.024),
+  0 6.3px 7.5px rgba(0, 0, 0, 0.03),
+  0 11.2px 13.4px rgba(0, 0, 0, 0.036),
+  0 20.9px 25.1px rgba(0, 0, 0, 0.043),
+  0 50px 60px rgba(0, 0, 0, 0.06);
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: #11a000;
+}
+
+#regDebug, #authDebug {
+  background: var(--button-hover);
+  color: var(--text);
+  border-radius: 0.25rem;
+  text-align: left;
+  font-size: 0.7rem;
+  padding: 0.5rem;
+  height: 15rem;
+  width: 95%;
+  overflow-y: auto;
+}
+
+/* Desktop Styles */
+@media (min-width: 75rem) {
+  * {
+    font-size: 20px;
+  }
+
+  .container {
+    width: 45rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c2128;
+    --text: black;
+    --button: #ECEFF1;
+    --button-active: #eeeeee;
+    --button-hover: #CFD8DC;
+  }
+}

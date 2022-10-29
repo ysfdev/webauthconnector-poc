@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.es5.umd.min.js"></script>
+    <script src="./index.js"> </script>
+    <link rel="stylesheet" href="./styles.css" />
+    <title>WebAuthConnect3.0 Demo</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>WebAuthConnect3.0 Demo</h1>
+      <div class="auth-container">
+        <h2>FIDO2 Login Demo</h2>
+        <img class="login-logo" alt="fido2-logo" src="https://www.scottbrady91.com/img/logos/fido.png" />
+        <div class="controls">
+          <section id="registration">
+            <button id="btnRegBegin">
+              <strong>🚪&nbsp;Register</strong>
+            </button>
+            <p id="regSuccess" class="success"></p>
+            <p id="regError" class="error"></p>
+            <details>
+              <summary>Registration Details</summary>
+              <textarea id="regDebug" spellcheck="false">NONE</textarea>
+            </details>
+          </section>
+
+          <section id="authentication">
+            <form onsubmit="stopSubmit(event)">
+              <button id="btnAuthBegin">
+                <strong>🔐&nbsp;Authenticate</strong>
+              </button>
+            </form>
+            <p id="authSuccess" class="success"></p>
+            <p id="authError" class="error"></p>
+            <details>
+              <summary>Authentication Details</summary>
+              <textarea id="authDebug" spellcheck="false">NONE</textarea>
+            </details>
+          </section>
+          </div>
+        </div>
+        <div class="auth-container">
+          <h2>Web3 Wallet Login Demo</h2>
+          <img class="login-logo" alt="web3-logo" src="https://1000logos.net/wp-content/uploads/2022/05/WalletConnect-Symbol.png"/>
+          <p>Coming soon...</p>
+        </div>
+        <div class="auth-container">
+        <h2>Web OAuth2 Login Demo</h2>
+        <img class="login-logo" alt="outh2-logo" src="https://xpertlab.com/wp-content/uploads/2021/07/java_foundation_oauth2_logo.png"/>
+        <p>Coming soon...</p>
+      </div>
+      <p class="systemError"></p>
+    </div>
+  </body>
+</html>
