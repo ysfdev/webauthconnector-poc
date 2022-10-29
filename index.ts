@@ -40,6 +40,7 @@ const app = express();
 const {
   ENABLE_HTTPS,
   RP_ID = 'localhost',
+  RP_NAME = 'WebAuthConnector'
 } = process.env;
 
 app.use(express.static('./public/'));
@@ -51,6 +52,8 @@ app.use(express.json());
  * represents the expected URL from which registration or authentication occurs.
  */
 export const rpID = RP_ID;
+export const rpName = RP_NAME;
+
 // This value is set at the bottom of page as part of server initialization (the empty string is
 // to appease TypeScript until we determine the expected origin based on whether or not HTTPS
 // support is enabled)
@@ -66,7 +69,7 @@ export let expectedOrigin = '';
  */
 const loggedInUserId = 'internalUserId';
 
-const inMemoryUserDeviceDB: { [loggedInUserId: string]: LoggedInUser } = {
+const inMemoryUserDeviceDB: { [key: string]: LoggedInUser } = {
   [loggedInUserId]: {
     id: loggedInUserId,
     username: `user@${rpID}`,
@@ -84,7 +87,23 @@ const inMemoryUserDeviceDB: { [loggedInUserId: string]: LoggedInUser } = {
  * Registration
  */
 app.get('/generate-registration-options', (req, res) => {
-  const user = inMemoryUserDeviceDB[loggedInUserId];
+  const userId = req.query['userId'] as string;
+  if (!userId) {
+    res.status(500).send({error: 'Invalid user ID'})
+  }
+
+  const userName = req.query['username'] as string;
+  
+  let user = inMemoryUserDeviceDB[userId];
+  if (!user) {   // check if it's new user
+    user = {
+      id: userId,
+      username: userName  || `${userId}@${rpID}`,
+      devices: [],
+      currentChallenge: undefined,
+    }
+    inMemoryUserDeviceDB[userId] = user
+  }
 
   const {
     /**
@@ -95,9 +114,9 @@ app.get('/generate-registration-options', (req, res) => {
   } = user;
 
   const opts: GenerateRegistrationOptionsOpts = {
-    rpName: 'SimpleWebAuthn Example',
+    rpName,
     rpID,
-    userID: loggedInUserId,
+    userID: userId,
     userName: username,
     timeout: 60000,
     attestationType: 'none',
@@ -132,15 +151,21 @@ app.get('/generate-registration-options', (req, res) => {
    * The server needs to temporarily remember this value for verification, so don't lose it until
    * after you verify an authenticator response.
    */
-  inMemoryUserDeviceDB[loggedInUserId].currentChallenge = options.challenge;
+  user.currentChallenge = options.challenge;
+  
+  inMemoryUserDeviceDB[userId].currentChallenge = options.challenge;
 
   res.send(options);
 });
 
 app.post('/verify-registration', async (req, res) => {
+  const userId = req.query['userId'] as string;
+  if (!userId) {
+    res.status(500).send({error: 'Invalid user ID'})
+  }
   const body: RegistrationCredentialJSON = req.body;
 
-  const user = inMemoryUserDeviceDB[loggedInUserId];
+  const user = inMemoryUserDeviceDB[userId];
 
   const expectedChallenge = user.currentChallenge;
 
@@ -188,8 +213,11 @@ app.post('/verify-registration', async (req, res) => {
  * Login (a.k.a. "Authentication")
  */
 app.get('/generate-authentication-options', (req, res) => {
-  // You need to know the user by this point
-  const user = inMemoryUserDeviceDB[loggedInUserId];
+  const userId = req.query['userId'] as string;
+  if (!userId) {
+    res.status(500).send({error: 'Invalid user ID'})
+  }
+  const user = inMemoryUserDeviceDB[userId];
 
   const opts: GenerateAuthenticationOptionsOpts = {
     timeout: 60000,
@@ -208,15 +236,19 @@ app.get('/generate-authentication-options', (req, res) => {
    * The server needs to temporarily remember this value for verification, so don't lose it until
    * after you verify an authenticator response.
    */
-  inMemoryUserDeviceDB[loggedInUserId].currentChallenge = options.challenge;
+  inMemoryUserDeviceDB[userId].currentChallenge = options.challenge;
 
   res.send(options);
 });
 
 app.post('/verify-authentication', async (req, res) => {
   const body: AuthenticationCredentialJSON = req.body;
+  const userId = req.query['userId'] as string;
+  if (!userId) {
+    res.status(500).send({error: 'Invalid user ID'})
+  }
 
-  const user = inMemoryUserDeviceDB[loggedInUserId];
+  const user = inMemoryUserDeviceDB[userId];
 
   const expectedChallenge = user.currentChallenge;
 
@@ -282,7 +314,7 @@ if (ENABLE_HTTPS) {
     });
 } else {
   const host = '127.0.0.1';
-  const port = 8000;
+  const port = 3000;
   expectedOrigin = rpID == 'localhost' ? `http://localhost:${port}` : `https://${rpID}`;
 
   http.createServer(app).listen(port, host, () => {

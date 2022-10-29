@@ -7,6 +7,7 @@ const {
 const elemSuccess = document.querySelector('#authSuccess');
 const elemError = document.querySelector('#authError');
 const elemDebug = document.querySelector('#authDebug');
+const tempUserId = generateGuid();
 
 // HELPERS 
 function stopSubmit(event) {
@@ -32,10 +33,17 @@ function showWelcomeContainer() {
     document.querySelector('.welcome-container').style.display = 'block'
 }
 
+// simple GUID generator, but with weak uniquenes gaurantes, but good enough for our POC
+function generateGuid() {
+    return Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+}
+
 async function preAuthInit() {
     // fetch the initial auth options
+    console.log('userID', tempUserId)
   try { 
-    const resp = await fetch('/generate-authentication-options');
+    const resp = await fetch(`/generate-authentication-options?userId=${tempUserId}`);
     const opts = resp.json()
     console.log('Authentication Options (Autofill)', opts);
     const asseResp = await startAuthentication(opts, true)
@@ -45,7 +53,7 @@ async function preAuthInit() {
 
     printDebug(elemDebug, 'Authentication Response (Autofill)', JSON.stringify(asseResp, null, 2));
 
-    const verificationResp = await fetch('/verify-authentication', {
+    const verificationResp = await fetch(`/verify-authentication?userId=${tempUserId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -82,7 +90,7 @@ async function registrationHandler() {
     elemError.innerHTML = '';
     elemDebug.innerHTML = '';
 
-    const resp = await fetch('/generate-registration-options');
+    const resp = await fetch(`/generate-registration-options?userId=${tempUserId}`);
 
     let attResp;
     try {
@@ -109,7 +117,7 @@ async function registrationHandler() {
         throw error;
     }
 
-    const verificationResp = await fetch('/verify-registration', {
+    const verificationResp = await fetch(`/verify-registration?userId=${tempUserId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -142,7 +150,7 @@ async function authHandler() {
     elemError.innerHTML = '';
     elemDebug.innerHTML = '';
 
-    const resp = await fetch('/generate-authentication-options');
+    const resp = await fetch(`/generate-authentication-options?userId=${tempUserId}`);
 
     let asseResp;
     try {
@@ -156,7 +164,7 @@ async function authHandler() {
         throw new Error(error);
     }
 
-    const verificationResp = await fetch('/verify-authentication', {
+    const verificationResp = await fetch(`/verify-authentication?userId=${tempUserId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ npm install
 
 ### Start app
 
-The app starts a backend HTTP server localhost port `8000` and serve a simple HTML based client application. 
+The app starts a backend HTTP server localhost port `3000` and serve a simple HTML based client application. 
 
 ```sh
 npm start
